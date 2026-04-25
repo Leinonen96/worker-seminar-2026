@@ -31,7 +31,7 @@ public class TestDataIntegrationTests {
 
     private Jwt jwt;
 
-    private final String test = "auth0|68d505ed399d6048c5f38275";
+    private final String test = "auth0|69ed43f0d04d1205bb13fa9d";
 
     @BeforeEach
     void setUp() {

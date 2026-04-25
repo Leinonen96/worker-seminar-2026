@@ -16,6 +16,7 @@ import com.jttam.glig.domain.user.dto.UserRequest;
 import com.jttam.glig.domain.user.dto.UserResponse;
 import com.jttam.glig.exception.custom.NotFoundException;
 import com.jttam.glig.service.Message;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import jakarta.transaction.Transactional;
 
@@ -71,6 +72,38 @@ public class UserControllerService {
         
         UserResponse userDto = userMapper.toUserResponse(user);
         return userDto;
+    }
+
+    @Transactional
+    public User getOrCreateUser(Jwt jwt) {
+        String username = jwt.getSubject();
+        String claimEmail = jwt.getClaimAsString("email");
+        
+        // This sets the variable once, making it "effectively final"
+        final String email = (claimEmail == null || claimEmail.isBlank()) 
+                         ? username + "@glig.com" 
+                         : claimEmail;
+
+        return userRepository.findByUserName(username)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUserName(username);
+                    newUser.setMail(email); // Lambda is happy now!
+                    User created = userRepository.save(newUser);
+
+                    TaskerProfile tp = new TaskerProfile();
+                    tp.setUser(created);
+                    tp.setStatus(ProfileStatus.ACTIVE);
+                    taskerProfileRepository.save(tp);
+
+                    EmployerProfile ep = new EmployerProfile();
+                    ep.setUser(created);
+                    ep.setEmployerType(EmployerType.INDIVIDUAL);
+                    ep.setStatus(ProfileStatus.ACTIVE);
+                    employerProfileRepository.save(ep);
+
+                    return created;
+                });
     }
 
     @Transactional

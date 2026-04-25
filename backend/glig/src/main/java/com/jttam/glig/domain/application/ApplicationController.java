@@ -144,14 +144,15 @@ public class ApplicationController {
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     @PostMapping("/task/{taskId}/application")
-    public ResponseEntity<?> createApplicationForTask(@PathVariable Long taskId,
-            @Valid @RequestBody ApplicationRequest applicationRequest,
-            BindingResult bindingResult, @AuthenticationPrincipal Jwt jwt) {
+public ResponseEntity<?> createApplicationForTask(@PathVariable Long taskId,
+        @Valid @RequestBody ApplicationRequest applicationRequest,
+        BindingResult bindingResult, @AuthenticationPrincipal Jwt jwt) {
 
-        methods.hasBindingResultErrors(bindingResult);
-        String username = jwt.getSubject();
-        return service.tryCreateNewApplicationForTask(taskId, applicationRequest, username);
-    }
+    methods.hasBindingResultErrors(bindingResult);
+    
+    // Instead of extracting the username here, pass the whole 'jwt' 
+    return service.tryCreateNewApplicationForTask(taskId, applicationRequest, jwt);
+}
 
     @Operation(summary = "Edit an existing application", description = "Allows an authenticated user to edit their own application for a task.")
     @ApiResponses(value = {

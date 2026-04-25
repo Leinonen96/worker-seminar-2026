@@ -23,6 +23,7 @@ import com.jttam.glig.domain.task.TaskControllerService;
 import com.jttam.glig.domain.task.TaskStatus;
 import com.jttam.glig.domain.task.dto.TaskResponse;
 import com.jttam.glig.domain.user.User;
+import com.jttam.glig.domain.user.UserControllerService;
 import com.jttam.glig.domain.user.UserRepository;
 import com.jttam.glig.exception.custom.ForbiddenException;
 import com.jttam.glig.exception.custom.NotFoundException;
@@ -30,6 +31,7 @@ import com.jttam.glig.service.Message;
 
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @Service
 public class ApplicationControllerService {
@@ -39,15 +41,21 @@ public class ApplicationControllerService {
     private final UserRepository userRepository;
     private final TaskControllerService taskControllerService;
     private final ApplicationMapper mapper;
+    private final UserControllerService userControllerService;
 
-    public ApplicationControllerService(ApplicationRepository applyRepository, TaskRepository taskRepository,
-            UserRepository userRepository, TaskControllerService taskControllerService, ApplicationMapper mapper) {
-        this.applyRepository = applyRepository;
-        this.taskRepository = taskRepository;
-        this.userRepository = userRepository;
-        this.taskControllerService = taskControllerService;
-        this.mapper = mapper;
-    }
+    public ApplicationControllerService(ApplicationRepository applyRepository, 
+                                    TaskRepository taskRepository,
+                                    UserRepository userRepository, 
+                                    TaskControllerService taskControllerService, 
+                                    ApplicationMapper mapper,
+                                    UserControllerService userControllerService) { 
+    this.applyRepository = applyRepository;
+    this.taskRepository = taskRepository;
+    this.userRepository = userRepository;
+    this.taskControllerService = taskControllerService;
+    this.mapper = mapper;
+    this.userControllerService = userControllerService;
+}
 
     public Application tryGetSingleApplicationByUsernameAndTaskId(Long taskId, String username) {
         ApplicationId applyId = new ApplicationId(taskId, username);
@@ -86,21 +94,19 @@ public class ApplicationControllerService {
     }
 
     @Transactional
-    public ResponseEntity<?> tryCreateNewApplicationForTask(Long taskId, ApplicationRequest application,
-            String username) {
-        ApplicationId applyId = new ApplicationId(taskId, username);
-        Optional<Application> apply = applyRepository.findById(applyId);
-        if (apply.isPresent()) {
-            return new ResponseEntity<Message>(new Message("ERROR", "User has already apply for this task"),
+    public ResponseEntity<?> tryCreateNewApplicationForTask(Long taskId, ApplicationRequest application, Jwt jwt) {
+        User user = userControllerService.getOrCreateUser(jwt);
+        ApplicationId applyId = new ApplicationId(taskId, user.getUserName());
+        if (applyRepository.existsById(applyId)) {
+            return new ResponseEntity<Message>(new Message("ERROR", "User has already applied for this task"),
                     HttpStatus.CONFLICT);
         }
 
         Task task = taskRepository.getReferenceById(taskId);
-        User user = userRepository.getReferenceById(username);
-
         Application newApply = mapper.toApplicationEntity(application);
         newApply.setUser(user);
         newApply.setTask(task);
+        
         Application saved = applyRepository.save(newApply);
         ApplicationResponse response = mapper.toApplicationResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
