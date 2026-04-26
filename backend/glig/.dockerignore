@@ -1,0 +1,9 @@
+target/
+**/target/
+*.log
+*.tmp
+**/.git
+**/.git/**
+**/.idea
+**/.vscode
+**/*.iml

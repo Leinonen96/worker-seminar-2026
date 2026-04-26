@@ -1,0 +1,43 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy project files to Droplet via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          source: "."
+          target: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app"
+
+      - name: Build and deploy containers via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
+            
+            # Create .env from GitHub secrets
+            echo "AUTH0_ISSUER=${{ secrets.AUTH0_ISSUER }}" > .env
+            echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+            
+            # Recreate containers in detached mode
+            docker compose down
+            docker compose up -d --build
+            
+            # Remove unused Docker images
+            docker image prune -f
