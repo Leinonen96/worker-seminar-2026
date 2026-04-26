@@ -32,13 +32,23 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
             
-            # Create .env from GitHub secrets
+            # 1. Create root .env for backend/compose
             echo "AUTH0_ISSUER=${{ secrets.AUTH0_ISSUER }}" > .env
             echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
             
-            # Recreate containers in detached mode
+            # 2. Create frontend specific .env inside the frontend directory
+            # These variables are injected into the React build by Vite
+            echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > frontend/workerfrontend/.env
+            echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}" >> frontend/workerfrontend/.env
+            echo "VITE_AUTH_CLIENT_ID=${{ secrets.VITE_AUTH_CLIENT_ID }}" >> frontend/workerfrontend/.env
+            echo "VITE_AUTH_AUDIENCE=${{ secrets.VITE_AUTH_AUDIENCE }}" >> frontend/workerfrontend/.env
+            echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> frontend/workerfrontend/.env
+            echo "VITE_DISABLE_AUTH0=${{ secrets.VITE_DISABLE_AUTH0 }}" >> frontend/workerfrontend/.env
+            
+            # 3. Recreate containers in detached mode
+            # Using --build ensures the new .env values are baked into the frontend image
             docker compose down
             docker compose up -d --build
             
-            # Remove unused Docker images
+            # 4. Clean up unused images to save SSD space
             docker image prune -f
