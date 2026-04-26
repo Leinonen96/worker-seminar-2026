@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: worker-db
+    environment:
+      POSTGRES_DB: workerdb
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend/glig
+    container_name: worker-backend
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/workerdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      # Käytetään prod-profiilia ja syötetään Auth0-tiedot ympäristömuuttujista
+      SPRING_PROFILES_ACTIVE: prod
+      OKTA_OAUTH2_ISSUER: ${AUTH0_ISSUER}
+      OKTA_OAUTH2_AUDIENCE: ${AUTH0_AUDIENCE}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend/workerfrontend
+      args:
+        # Frontendin pitää tietää backendin osoite. Lokaalissa testauksessa se on localhost.
+        VITE_API_URL: http://localhost:8080/api
+    container_name: worker-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
