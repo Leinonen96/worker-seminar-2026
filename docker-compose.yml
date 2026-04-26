@@ -29,8 +29,8 @@ services:
     build:
       context: ./frontend/workerfrontend
       args:
-        # Frontendin pitää tietää backendin osoite. Lokaalissa testauksessa se on localhost.
-        VITE_API_URL: http://localhost:8080/api
+        # Käytetään dynaamista ympäristömuuttujaa (tai oletuksena /api jos sitä ei löydy)
+        VITE_API_URL: ${VITE_API_URL:-/api}
     container_name: worker-frontend
     depends_on:
       - backend
