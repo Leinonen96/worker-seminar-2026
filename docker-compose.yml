@@ -35,4 +35,4 @@ services:
     depends_on:
       - backend
     ports:
-      - "80:80"
+      - "8081:80"  # Changed 80 -> 8081 to avoid conflict with server Nginx
