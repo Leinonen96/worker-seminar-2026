@@ -28,6 +28,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
+          command_timeout: 20m
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
             
