@@ -52,3 +52,8 @@ jobs:
             
             # 4. Clean up unused images to save SSD space
             docker image prune -f
+
+            # 5. RUN E2E TESTS
+            # This will run the tests and return a non-zero exit code if they fail,
+            # which will mark the GitHub Action as failed.
+            docker compose --profile e2e up robot --build --abort-on-container-exit
