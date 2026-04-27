@@ -36,3 +36,15 @@ services:
       - backend
     ports:
       - "8081:80"  # Changed 80 -> 8081 to avoid conflict with server Nginx
+  
+  robot:
+    build: ./e2e-tests
+    container_name: worker-robot
+    depends_on:
+      - frontend
+    volumes:
+      # Mount the local folder to the container to extract the generated HTML reports
+      - ./e2e-tests:/tests
+    # The profile ensures this container does not run automatically with 'docker compose up -d'
+    profiles:
+      - e2e
