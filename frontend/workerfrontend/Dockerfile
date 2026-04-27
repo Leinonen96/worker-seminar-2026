@@ -8,9 +8,21 @@ RUN npm ci
 
 COPY . .
 
-# Accept API URL from docker-compose / GitHub Actions
+# --- KORJAUS ALKAA ---
+# Otetaan vastaan KAIKKI build-argumentit, joita sovellus tarvitsee
 ARG VITE_API_URL
+ARG VITE_AUTH_DOMAIN
+ARG VITE_AUTH_CLIENT_ID
+ARG VITE_AUTH_AUDIENCE
+ARG VITE_GOOGLE_MAPS_API_KEY
+
+# Asetetaan ne ympäristömuuttujiksi, jotta Vite näkee ne build-vaiheessa
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN
+ENV VITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID
+ENV VITE_AUTH_AUDIENCE=$VITE_AUTH_AUDIENCE
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+# --- KORJAUS LOPPUU ---
 
 RUN npm run build
 
@@ -18,7 +30,7 @@ RUN npm run build
 FROM nginx:stable-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# SPA-reitityksen korjaus: Korvataan Nginxin oletus 404-virhe ohjaamalla index.html:ään
+# SPA-reitityksen korjaus
 RUN sed -i 's/try_files $uri $uri\/ =404;/try_files $uri $uri\/ \/index.html;/g' /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

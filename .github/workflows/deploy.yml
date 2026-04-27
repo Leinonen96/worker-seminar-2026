@@ -19,7 +19,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          # EI kopioi testituloksia, jotta oikeudet eivät mene sekaisin
+          # Ei kopioida vanhoja testituloksia, jotta oikeudet säilyvät puhtaina
           source: ".,!e2e-tests/results"
           target: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app"
 
@@ -33,27 +33,39 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
             
-            # 1. Ympäristömuuttujat
-            echo "AUTH0_ISSUER=${{ secrets.AUTH0_ISSUER }}" > .env
-            echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+            # 1. Asetetaan ja exportataan muuttujat shell-istuntoon
+            export AUTH0_ISSUER="${{ secrets.AUTH0_ISSUER }}"
+            export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
+            export VITE_API_URL="${{ secrets.VITE_API_URL }}"
+            export VITE_AUTH_DOMAIN="${{ secrets.VITE_AUTH_DOMAIN }}"
+            export VITE_AUTH_CLIENT_ID="${{ secrets.VITE_AUTH_CLIENT_ID }}"
+            export VITE_AUTH_AUDIENCE="${{ secrets.VITE_AUTH_AUDIENCE }}"
+            export VITE_GOOGLE_MAPS_API_KEY="${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}"
+            export VITE_DISABLE_AUTH0="${{ secrets.VITE_DISABLE_AUTH0 }}"
+
+            # Luodaan myös .env-tiedostot varmuuden vuoksi runtimea varten
+            echo "AUTH0_ISSUER=$AUTH0_ISSUER" > .env
+            echo "AUTH0_AUDIENCE=$AUTH0_AUDIENCE" >> .env
             
-            echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > frontend/workerfrontend/.env
-            echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}" >> frontend/workerfrontend/.env
-            echo "VITE_AUTH_CLIENT_ID=${{ secrets.VITE_AUTH_CLIENT_ID }}" >> frontend/workerfrontend/.env
-            echo "VITE_AUTH_AUDIENCE=${{ secrets.VITE_AUTH_AUDIENCE }}" >> frontend/workerfrontend/.env
-            echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> frontend/workerfrontend/.env
-            echo "VITE_DISABLE_AUTH0=${{ secrets.VITE_DISABLE_AUTH0 }}" >> frontend/workerfrontend/.env
-            
-            # 2. Käynnistä sovellus
+            # Frontendin build-aikaista .env-tiedostoa Vite etsii tästä polusta
+            cat <<EOF > frontend/workerfrontend/.env
+            VITE_API_URL=$VITE_API_URL
+            VITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN
+            VITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID
+            VITE_AUTH_AUDIENCE=$VITE_AUTH_AUDIENCE
+            VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+            VITE_DISABLE_AUTH0=$VITE_DISABLE_AUTH0
+            EOF
+
+            # 2. Käynnistä sovellus (Nyt exportatut muuttujat siirtyvät build-argumenteiksi)
             docker compose down
             docker compose up -d --build
             
-            # KORJAUS: Dynaaminen odotus staattisen sleepin sijaan
+            # 3. Dynaaminen odotus
             echo "Odotetaan, että sovellus vastaa (200 OK)..."
             for i in {1..30}; do
-              # Kokeillaan ladata etusivu ja etsiä sieltä tunnisteteksti
-              # -s = silent, -k = salli epäluotettava SSL (itse allekirjoitettu/localhost)
-              if curl -s -k https://localhost | grep -q "Saa enemmän aikaan"; then
+              # Tarkistetaan paikallinen 8081 portti (missä frontend asuu Dockerissa)
+              if curl -s -k http://localhost:8081 | grep -q "Saa enemmän aikaan"; then
                 echo "Sovellus on ylhäällä!"
                 break
               fi
@@ -61,16 +73,16 @@ jobs:
               sleep 2
             done
 
-            # 3. Siivoa testitulokset Dockerin avulla
+            # 4. Siivoa testitulokset Dockerin avulla (poistaa sudo-tarpeen)
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
             
-            # 4. Aja testit
+            # 5. Aja testit
             docker compose --profile e2e up robot --build --abort-on-container-exit
             
-            # 5. Siivous
+            # 6. Siivous turhista imageista
             docker image prune -f
 
-      # Lataa screenshotit GitHubiin, jos testi epäonnistuu
+      # Screenshotien lataus GitHubiin epäonnistumisen sattuessa
       - name: Download Screenshots from server
         if: failure()
         uses: appleboy/scp-action@v0.1.7
@@ -78,6 +90,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
+          # Huom: tarkistettu polku kuvakaappauksille
           source: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app/e2e-tests/results/browser/screenshot/*.png"
           target: "failed_screenshots"
           strip_components: 6
