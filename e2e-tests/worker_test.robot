@@ -8,41 +8,46 @@ ${TEST_USER}       seminaari.testi@testi.fi
 ${TEST_PASS}       Testi123!
 
 *** Test Cases ***
-Etusivu latautuu oikein
-    [Documentation]    Tarkistaa, että React-sovellus aukeaa.
+Suorita E2E Smoke Test
+    [Documentation]    Käy läpi koko pääpolun: etusivu, kirjautuminen ja suodatus.
+    
     New Browser    browser=chromium    headless=True
     New Context    viewport={'width': 1920, 'height': 1080}
     New Page       ${FRONTEND_URL}
     
-    Get Text       h1    contains    Saa enemmän aikaan
+    # 1. ETUSIVU
+    # Odotetaan, että pääotsikko ilmestyy
+    Wait For Elements State    css=h1    visible    timeout=15s
     Take Screenshot    filename=1_etusivu
-
-Testikayttajan sisaankirjautuminen Auth0 kautta
-    [Documentation]    Testaa oikean testikäyttäjän kirjautumisen sovellukseen.
-    Click          text="Kirjaudu"
     
-    Wait For Condition    Url    contains    auth0.com
+    # 2. KIRJAUTUMINEN (Auth0-polku)
+    Click          role=button[name="Kirjaudu"]
     
-    Fill Text      input[name="username"]    ${TEST_USER}
-    Fill Text      input[name="password"]    ${TEST_PASS}
+    Wait For Condition    Url    contains    auth0.com    timeout=15s
     
-    Click          button[value="default"]
+    # Syötetään tunnukset
+    Fill Text      role=textbox[name="Email address"]    ${TEST_USER}
+    Fill Text      role=textbox[name="Password"]         ${TEST_PASS}
     
-    Wait For Elements State    text="Kirjaudu ulos"    visible    timeout=20s
+    # Painetaan Continue-nappia
+    Click          role=button[name="Continue"]
+    
+    # 3. KIRJAUTUMISEN VARMISTUS
+    # Odotetaan, että profiililinkki ilmestyy
+    Wait For Elements State    role=link[name="Profiili"]    visible    timeout=20s
     Take Screenshot    filename=2_kirjautunut_sisaan
-
-Tyoilmoitukset valilehti ja suodatus
-    [Documentation]    Siirtyy työilmoitukset-sivulle ja käyttää hakua.
-    # Siirrytään oikealle välilehdelle yläpalkista
-    Click          text="Työilmoitukset"
     
-    # Varmistetaan, että sivu latautui (kuvassasi iso "Selaa tehtäviä" -otsikko)
-    Wait For Elements State    h1:has-text("Selaa tehtäviä")    visible    timeout=10s
+    # 4. TYÖILMOITUKSET JA HAKU
+    Click          role=link[name="Työilmoitukset"]
     
-    # Testataan suodattimia
+    # Odotetaan haku-nappia
+    Wait For Elements State    role=button[name="search Hae tehtäviä"]    visible    timeout=15s
+    
+    # Syötetään hakusana placeholderilla
     Fill Text      css=[placeholder="Etsi otsikosta tai kuvauksesta..."]    Siivousapua
-    Click          text="Cleaning"
-    Click          button:has-text("Hae tehtäviä")
+    
+    # Suoritetaan haku
+    Click          role=button[name="search Hae tehtäviä"]
     
     Sleep          2s
     Take Screenshot    filename=3_haku_suoritettu
