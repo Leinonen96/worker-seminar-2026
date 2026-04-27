@@ -31,40 +31,29 @@ jobs:
           command_timeout: 30m
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
-            
-            # 1. Asetetaan ja exportataan muuttujat
-            export AUTH0_ISSUER="${{ secrets.AUTH0_ISSUER }}"
-            export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
-            export VITE_API_URL="${{ secrets.VITE_API_URL }}"
-            export VITE_AUTH_DOMAIN="${{ secrets.VITE_AUTH_DOMAIN }}"
-            export VITE_AUTH_CLIENT_ID="${{ secrets.VITE_AUTH_CLIENT_ID }}"
-            export VITE_AUTH_AUDIENCE="${{ secrets.VITE_AUTH_AUDIENCE }}"
-            export VITE_GOOGLE_MAPS_API_KEY="${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}"
-            export VITE_DISABLE_AUTH0="${{ secrets.VITE_DISABLE_AUTH0 }}"
 
-            # Luodaan .env-tiedostot
-            echo "AUTH0_ISSUER=$AUTH0_ISSUER" > .env
-            echo "AUTH0_AUDIENCE=$AUTH0_AUDIENCE" >> .env
-            
-            cat <<EOF > frontend/workerfrontend/.env
-            VITE_API_URL=$VITE_API_URL
-            VITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN
-            VITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID
-            VITE_AUTH_AUDIENCE=$VITE_AUTH_AUDIENCE
-            VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
-            VITE_DISABLE_AUTH0=$VITE_DISABLE_AUTH0
-            EOF
+            # 1. Luodaan .env-tiedostot suoraan secreteistä (maskaus toimii)
+            printf 'AUTH0_ISSUER=%s\n' "${{ secrets.AUTH0_ISSUER }}" > .env
+            printf 'AUTH0_AUDIENCE=%s\n' "${{ secrets.AUTH0_AUDIENCE }}" >> .env
 
-            # 2. Käynnistä sovellus
+            printf 'VITE_API_URL=%s\n' "${{ secrets.VITE_API_URL }}" > frontend/workerfrontend/.env
+            printf 'VITE_AUTH_DOMAIN=%s\n' "${{ secrets.VITE_AUTH_DOMAIN }}" >> frontend/workerfrontend/.env
+            printf 'VITE_AUTH_CLIENT_ID=%s\n' "${{ secrets.VITE_AUTH_CLIENT_ID }}" >> frontend/workerfrontend/.env
+            printf 'VITE_AUTH_AUDIENCE=%s\n' "${{ secrets.VITE_AUTH_AUDIENCE }}" >> frontend/workerfrontend/.env
+            printf 'VITE_GOOGLE_MAPS_API_KEY=%s\n' "${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> frontend/workerfrontend/.env
+            printf 'VITE_DISABLE_AUTH0=%s\n' "${{ secrets.VITE_DISABLE_AUTH0 }}" >> frontend/workerfrontend/.env
+
+            # 2. Pakota frontend rebuilttaamaan ilman cachea
             docker compose down
+            docker compose build --no-cache frontend
             docker compose up -d --build
-            
-            # 3. Siivoa testitulokset Dockerin avulla
+
+            # 3. Siivoa testitulokset
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
-            
-            # 4. Aja testit välittömästi (Robotti hoitaa odottamisen)
+
+            # 4. Aja testit
             docker compose --profile e2e up robot --build --abort-on-container-exit
-            
+
             # 5. Siivous
             docker image prune -f
 
