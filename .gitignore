@@ -50,3 +50,21 @@ SEMINAARI_README.md
 
 # Test results
 e2e-tests/results/
+
+# Robot Framework outputs
+log.html
+report.html
+output.xml
+results/
+
+# Playwright / Browser logs
+playwright-log.txt
+browser/
+
+# Screenshots / debug
+*.png
+*.jpg
+
+# Node / build (jos ei jo ole)
+node_modules/
+dist/

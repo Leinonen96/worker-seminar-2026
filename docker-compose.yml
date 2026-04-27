@@ -50,6 +50,9 @@ services:
       - frontend
     volumes:
       - ./e2e-tests:/tests
+      - ./results:/tests/results
+    environment:
+      - FRONTEND_URL=http://worker-frontend:80
     profiles:
       - e2e
     # pakottaa domainin osoittamaan Docker-verkon sisään
