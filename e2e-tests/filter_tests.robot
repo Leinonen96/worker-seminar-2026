@@ -23,21 +23,14 @@ Suodata Tehtavia Role Tyylilla
     
     # 3. SIJAINTI
     Fill Text    role=textbox[name*="Kaupunki"]    helsinki
-    Take Screenshot    filename=filter_vaihe_1_taytetty
-
+    
     # 4. HAKUNAPPI
     Click    role=button[name*="Hae tehtäviä"]
     
-    # 5. TULOSTEN VARMISTUS JA SKROLLAUS
-    # Odotetaan ensin, että tulos on olemassa
-    ${tulos_locator}=    Set Variable    text="Siivoa keittiö #5"
-    Wait For Elements State    ${tulos_locator}    visible    timeout=15s
+    # 5. TULOSTEN VARMISTUS (Vaihdettu olemassa olevaan kohteeseen)
+    Wait For Elements State    text="Siivoa parvi #6"    visible    timeout=15s
     
-    # SKROLLAUS: Liikutetaan näkymä tuloksen kohdalle
-    Scroll To Element    ${tulos_locator}
-    
-    # Annetaan selaimelle hetki aikaa rauhoittua skrollauksen jälkeen
+    # Skrollataan kohteeseen ja otetaan kuva
+    Scroll To Element    text="Siivoa parvi #6"
     Sleep    1s    
-    
-    # Otetaan kuva, jossa skrollaus on tehty
-    Take Screenshot    filename=filter_vaihe_2_valmis
+    Take Screenshot    filename=filter_vaihe_2_valmis    fullPage=True
