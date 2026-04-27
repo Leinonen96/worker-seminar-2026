@@ -4,7 +4,7 @@ Test Setup  Avaa Tehtavasivu
 
 *** Keywords ***
 Avaa Tehtavasivu
-    New Browser    browser=chromium    headless=false
+    New Browser    browser=chromium    headless=ture
     New Context    viewport={'width': 1920, 'height': 1080}    ignoreHTTPSErrors=True
     New Page       https://tuomasleinonen.store/worker/tasks
     Wait For Elements State    css=h1    visible    timeout=20s
