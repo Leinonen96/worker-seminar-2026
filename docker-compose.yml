@@ -28,12 +28,15 @@ services:
   frontend:
     build:
       context: ./frontend/workerfrontend
+      dockerfile: Dockerfile
       args:
+        # TÄMÄ ON SILTA: Nämä siirtävät muuttujat Dockerin buildiin
         VITE_API_URL: ${VITE_API_URL}
         VITE_AUTH_DOMAIN: ${VITE_AUTH_DOMAIN}
         VITE_AUTH_CLIENT_ID: ${VITE_AUTH_CLIENT_ID}
         VITE_AUTH_AUDIENCE: ${VITE_AUTH_AUDIENCE}
         VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
+        VITE_DISABLE_AUTH0: ${VITE_DISABLE_AUTH0}
     container_name: worker-frontend
     depends_on:
       - backend

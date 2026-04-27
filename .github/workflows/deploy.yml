@@ -32,36 +32,30 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
 
-            # 1. Exportataan muuttujat shellin ympäristöön
-            export AUTH0_ISSUER="${{ secrets.AUTH0_ISSUER }}"
-            export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
+            # 1. Exportataan muuttujat shellin ympäristöön (docker-compose args varten)
             export VITE_API_URL="${{ secrets.VITE_API_URL }}"
             export VITE_AUTH_DOMAIN="${{ secrets.VITE_AUTH_DOMAIN }}"
             export VITE_AUTH_CLIENT_ID="${{ secrets.VITE_AUTH_CLIENT_ID }}"
             export VITE_AUTH_AUDIENCE="${{ secrets.VITE_AUTH_AUDIENCE }}"
             export VITE_GOOGLE_MAPS_API_KEY="${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}"
             export VITE_DISABLE_AUTH0="${{ secrets.VITE_DISABLE_AUTH0 }}"
+            export AUTH0_ISSUER="${{ secrets.AUTH0_ISSUER }}"
+            export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
 
-            # 2. Kirjoitetaan .env-tiedostot
-            printf 'AUTH0_ISSUER=%s\nAUTH0_AUDIENCE=%s\n' \
-              "$AUTH0_ISSUER" "$AUTH0_AUDIENCE" > .env
+            # 2. Kirjoitetaan .env varmuuden vuoksi
+            printf "VITE_API_URL=$VITE_API_URL\nVITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN\nVITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID\nVITE_AUTH_AUDIENCE=$VITE_AUTH_AUDIENCE\nVITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY\nVITE_DISABLE_AUTH0=$VITE_DISABLE_AUTH0\n" > frontend/workerfrontend/.env
+            printf "AUTH0_ISSUER=$AUTH0_ISSUER\nAUTH0_AUDIENCE=$AUTH0_AUDIENCE\n" > .env
 
-            printf 'VITE_API_URL=%s\nVITE_AUTH_DOMAIN=%s\nVITE_AUTH_CLIENT_ID=%s\nVITE_AUTH_AUDIENCE=%s\nVITE_GOOGLE_MAPS_API_KEY=%s\nVITE_DISABLE_AUTH0=%s\n' \
-              "$VITE_API_URL" "$VITE_AUTH_DOMAIN" "$VITE_AUTH_CLIENT_ID" \
-              "$VITE_AUTH_AUDIENCE" "$VITE_GOOGLE_MAPS_API_KEY" "$VITE_DISABLE_AUTH0" \
-              > frontend/workerfrontend/.env
-
-            # 3. Pakota frontend rebuilttaamaan ilman cachea
+            # 3. Käynnistetään sovellus (Pakotetaan uusi build muuttujilla)
             docker compose down
-            docker compose build --no-cache frontend
             docker compose up -d --build
 
-            # 4. Siivoa testitulokset
+            # 4. Siivotaan vanhat testitulokset
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
 
-            # 5. Aja testit
+            # 5. Ajetaan testit (Robotti hoitaa dynaamisen odotuksen)
             docker compose --profile e2e up robot --build --abort-on-container-exit
-
+            
             # 6. Siivous
             docker image prune -f
 
