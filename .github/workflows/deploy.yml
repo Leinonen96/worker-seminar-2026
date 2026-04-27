@@ -19,7 +19,6 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          # Ei kopioida vanhoja testituloksia, jotta oikeudet säilyvät puhtaina
           source: ".,!e2e-tests/results"
           target: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app"
 
@@ -33,7 +32,7 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
             
-            # 1. Asetetaan ja exportataan muuttujat shell-istuntoon
+            # 1. Asetetaan ja exportataan muuttujat
             export AUTH0_ISSUER="${{ secrets.AUTH0_ISSUER }}"
             export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
             export VITE_API_URL="${{ secrets.VITE_API_URL }}"
@@ -43,11 +42,10 @@ jobs:
             export VITE_GOOGLE_MAPS_API_KEY="${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}"
             export VITE_DISABLE_AUTH0="${{ secrets.VITE_DISABLE_AUTH0 }}"
 
-            # Luodaan myös .env-tiedostot varmuuden vuoksi runtimea varten
+            # Luodaan .env-tiedostot
             echo "AUTH0_ISSUER=$AUTH0_ISSUER" > .env
             echo "AUTH0_AUDIENCE=$AUTH0_AUDIENCE" >> .env
             
-            # Frontendin build-aikaista .env-tiedostoa Vite etsii tästä polusta
             cat <<EOF > frontend/workerfrontend/.env
             VITE_API_URL=$VITE_API_URL
             VITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN
@@ -57,32 +55,19 @@ jobs:
             VITE_DISABLE_AUTH0=$VITE_DISABLE_AUTH0
             EOF
 
-            # 2. Käynnistä sovellus (Nyt exportatut muuttujat siirtyvät build-argumenteiksi)
+            # 2. Käynnistä sovellus
             docker compose down
             docker compose up -d --build
             
-            # 3. Dynaaminen odotus
-            echo "Odotetaan, että sovellus vastaa (200 OK)..."
-            for i in {1..30}; do
-              # Tarkistetaan paikallinen 8081 portti (missä frontend asuu Dockerissa)
-              if curl -s -k http://localhost:8081 | grep -q "Saa enemmän aikaan"; then
-                echo "Sovellus on ylhäällä!"
-                break
-              fi
-              echo "Vielä odotellaan... ($i/30)"
-              sleep 2
-            done
-
-            # 4. Siivoa testitulokset Dockerin avulla (poistaa sudo-tarpeen)
+            # 3. Siivoa testitulokset Dockerin avulla
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
             
-            # 5. Aja testit
+            # 4. Aja testit välittömästi (Robotti hoitaa odottamisen)
             docker compose --profile e2e up robot --build --abort-on-container-exit
             
-            # 6. Siivous turhista imageista
+            # 5. Siivous
             docker image prune -f
 
-      # Screenshotien lataus GitHubiin epäonnistumisen sattuessa
       - name: Download Screenshots from server
         if: failure()
         uses: appleboy/scp-action@v0.1.7
@@ -90,7 +75,6 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          # Huom: tarkistettu polku kuvakaappauksille
           source: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app/e2e-tests/results/browser/screenshot/*.png"
           target: "failed_screenshots"
           strip_components: 6
