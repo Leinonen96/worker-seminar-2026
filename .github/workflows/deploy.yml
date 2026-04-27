@@ -19,7 +19,8 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: "."
+          # EI kopioi testituloksia
+          source: ".,!e2e-tests/results"
           target: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app"
 
       - name: Build and deploy containers via SSH
@@ -32,12 +33,10 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
             
-            # 1. Create root .env for backend/compose
+            # 1. Ympäristömuuttujat (kuten ennenkin)
             echo "AUTH0_ISSUER=${{ secrets.AUTH0_ISSUER }}" > .env
             echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
             
-            # 2. Create frontend specific .env inside the frontend directory
-            # These variables are injected into the React build by Vite
             echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > frontend/workerfrontend/.env
             echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}" >> frontend/workerfrontend/.env
             echo "VITE_AUTH_CLIENT_ID=${{ secrets.VITE_AUTH_CLIENT_ID }}" >> frontend/workerfrontend/.env
@@ -45,15 +44,20 @@ jobs:
             echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> frontend/workerfrontend/.env
             echo "VITE_DISABLE_AUTH0=${{ secrets.VITE_DISABLE_AUTH0 }}" >> frontend/workerfrontend/.env
             
-            # 3. Recreate containers in detached mode
-            # Using --build ensures the new .env values are baked into the frontend image
+            # 2. Käynnistä sovellus
             docker compose down
             docker compose up -d --build
             
-            # 4. Clean up unused images to save SSD space
-            docker image prune -f
+            # KORJAUS 2: Odota, että frontti on varmasti pystyssä ennen testejä
+            # Docker Compose Up -d palaa heti, mutta Node/Vite-käynnistys kestää hetken
+            echo "Odotetaan sovelluksen käynnistymistä..."
+            sleep 20 
 
-            # 5. RUN E2E TESTS
-            # This will run the tests and return a non-zero exit code if they fail,
-            # which will mark the GitHub Action as failed.
+            # 3. Aja testit
+            # Lisätty sudo, koska Dockerin luomat screenshotit ovat usein root-oikeuksilla
+            # ja ne pitää pystyä ylikirjoittamaan/poistamaan seuraavalla kerralla.
+            sudo rm -rf e2e-tests/results/*
             docker compose --profile e2e up robot --build --abort-on-container-exit
+            
+            # 4. Siivous
+            docker image prune -f
