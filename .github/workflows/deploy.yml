@@ -46,11 +46,14 @@ jobs:
             printf "VITE_API_URL=$VITE_API_URL\nVITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN\nVITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID\nVITE_AUTH_AUDIENCE=$VITE_AUTH_AUDIENCE\nVITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY\nVITE_DISABLE_AUTH0=$VITE_DISABLE_AUTH0\n" > frontend/workerfrontend/.env
             printf "AUTH0_ISSUER=$AUTH0_ISSUER\nAUTH0_AUDIENCE=$AUTH0_AUDIENCE\n" > .env
 
-            # 3. Käynnistetään sovellus (Pakotetaan uusi build muuttujilla)
+            # 3. Käynnistetään sovellus
             docker compose down
-            docker compose up -d --build
+            
+            # PAKOTETAAN PUHDAS BUILD FRONTENDILLE (Ohittaa viallisen välimuistin)
+            docker compose build --no-cache frontend
+            docker compose up -d
 
-            # 4. Siivotaan vanhat testitulokset
+            # 4. Siivoataan vanhat testitulokset
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
 
             # 5. Ajetaan testit (Robotti hoitaa dynaamisen odotuksen)
