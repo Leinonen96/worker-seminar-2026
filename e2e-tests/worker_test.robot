@@ -11,16 +11,17 @@ ${TEST_PASS}       Testi123!
 Suorita E2E Smoke Test
     [Documentation]    Käy läpi koko pääpolun: etusivu, kirjautuminen ja suodatus.
     
-    # Käynnistetään selain
     New Browser    browser=chromium    headless=True
     New Context    viewport={'width': 1920, 'height': 1080}
     
-    # 1. AVATAAN SIVU JA ODOTETAAN HERÄÄMISTÄ
-    # New Page avaa välilehden JA navigoi osoitteeseen
+    # 1. AVATAAN SIVU JA ODOTETAAN LATAUTUMISTA
     New Page       ${FRONTEND_URL}
     
-    # Odotetaan otsikkoa. 30s on hyvä palvelimen hitauden varalta.
-    Wait For Elements State    css=h1    visible    timeout=30s
+    # Odotetaan, että verkkoliikenne rauhoittuu (React-hydraatio valmis)
+    Wait For Load State    networkidle    timeout=30s
+    
+    # Etsitään tekstiä, joka on varmasti näkyvissä
+    Wait For Elements State    text="Saa enemmän aikaan"    visible    timeout=30s
     Take Screenshot    filename=1_etusivu
     
     # 2. KIRJAUTUMINEN (Auth0-polku)

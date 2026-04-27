@@ -33,7 +33,7 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
             
-            # 1. Ympäristömuuttujat (kuten ennenkin)
+            # 1. Ympäristömuuttujat
             echo "AUTH0_ISSUER=${{ secrets.AUTH0_ISSUER }}" > .env
             echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
             
@@ -48,16 +48,14 @@ jobs:
             docker compose down
             docker compose up -d --build
             
-            # KORJAUS 2: Odota, että frontti on varmasti pystyssä ennen testejä
-            # Docker Compose Up -d palaa heti, mutta Node/Vite-käynnistys kestää hetken
-            echo "Odotetaan sovelluksen käynnistymistä..."
+            echo "Odotetaan sovelluksen heräämistä..."
             sleep 20 
 
-            # 3. Aja testit
-            # Lisätty sudo, koska Dockerin luomat screenshotit ovat usein root-oikeuksilla
-            # ja ne pitää pystyä ylikirjoittamaan/poistamaan seuraavalla kerralla.
-            sudo rm -rf e2e-tests/results/*
+            # 3. Siivoa testitulokset Dockerin avulla (kiertää sudon)
+            docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
+            
+            # 4. Aja testit
             docker compose --profile e2e up robot --build --abort-on-container-exit
             
-            # 4. Siivous
+            # 5. Siivous
             docker image prune -f
