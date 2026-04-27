@@ -43,8 +43,9 @@ services:
     depends_on:
       - frontend
     volumes:
-      # Mount the local folder to the container to extract the generated HTML reports
       - ./e2e-tests:/tests
-    # The profile ensures this container does not run automatically with 'docker compose up -d'
     profiles:
       - e2e
+    # TÄMÄ RIVI KORJAA VERKKO-ONGELMAN:
+    extra_hosts:
+      - "tuomasleinonen.store:host-gateway"
