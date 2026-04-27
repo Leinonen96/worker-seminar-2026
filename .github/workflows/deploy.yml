@@ -19,7 +19,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          # EI kopioi testituloksia
+          # EI kopioi testituloksia, jotta oikeudet eivät mene sekaisin
           source: ".,!e2e-tests/results"
           target: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app"
 
@@ -48,10 +48,20 @@ jobs:
             docker compose down
             docker compose up -d --build
             
-            echo "Odotetaan sovelluksen heräämistä..."
-            sleep 20 
+            # KORJAUS: Dynaaminen odotus staattisen sleepin sijaan
+            echo "Odotetaan, että sovellus vastaa (200 OK)..."
+            for i in {1..30}; do
+              # Kokeillaan ladata etusivu ja etsiä sieltä tunnisteteksti
+              # -s = silent, -k = salli epäluotettava SSL (itse allekirjoitettu/localhost)
+              if curl -s -k https://localhost | grep -q "Saa enemmän aikaan"; then
+                echo "Sovellus on ylhäällä!"
+                break
+              fi
+              echo "Vielä odotellaan... ($i/30)"
+              sleep 2
+            done
 
-            # 3. Siivoa testitulokset Dockerin avulla (kiertää sudon)
+            # 3. Siivoa testitulokset Dockerin avulla
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
             
             # 4. Aja testit
@@ -59,3 +69,22 @@ jobs:
             
             # 5. Siivous
             docker image prune -f
+
+      # Lataa screenshotit GitHubiin, jos testi epäonnistuu
+      - name: Download Screenshots from server
+        if: failure()
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          source: "/home/${{ secrets.DROPLET_USERNAME }}/worker-app/e2e-tests/results/browser/screenshot/*.png"
+          target: "failed_screenshots"
+          strip_components: 6
+
+      - name: Upload Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-failure-screenshots
+          path: failed_screenshots/

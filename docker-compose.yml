@@ -46,6 +46,6 @@ services:
       - ./e2e-tests:/tests
     profiles:
       - e2e
-    # TÄMÄ RIVI KORJAA VERKKO-ONGELMAN:
+    # pakottaa domainin osoittamaan Docker-verkon sisään
     extra_hosts:
       - "tuomasleinonen.store:host-gateway"
