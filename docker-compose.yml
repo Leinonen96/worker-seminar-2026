@@ -28,14 +28,18 @@ services:
   frontend:
     build:
       context: ./frontend/workerfrontend
+      dockerfile: Dockerfile
       args:
-        # Käytetään dynaamista ympäristömuuttujaa (tai oletuksena /api jos sitä ei löydy)
-        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_AUTH_DOMAIN: ${VITE_AUTH_DOMAIN}
+        VITE_AUTH_CLIENT_ID: ${VITE_AUTH_CLIENT_ID}
+        VITE_AUTH_AUDIENCE: ${VITE_AUTH_AUDIENCE}
+        VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY}
     container_name: worker-frontend
     depends_on:
       - backend
     ports:
-      - "8081:80"  # Changed 80 -> 8081 to avoid conflict with server Nginx
+      - "8081:80"
   
   robot:
     build: ./e2e-tests

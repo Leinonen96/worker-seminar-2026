@@ -27,10 +27,18 @@ Suorita E2E Smoke Test
     ...    Wait For Elements State    role=heading[name="Saa enemmän aikaan"]    visible    timeout=30s
     
     IF    not ${status}
+        # Klikataan virheilmoitus auki, jos React Error Boundary on näkyvissä
+        ${error_exists}=    Run Keyword And Return Status    Page Should Contain    Something went wrong!
+        IF    ${error_exists}
+            Click    text="Show Error"
+            ${actual_error}=    Get Text    pre    # Virheet ovat usein <pre> tägeissä
+            Log    VARSINAINEN REACT VIRHE: ${actual_error}    level=ERROR
+        END
+        
         ${source}=    Get Page Source
         Log    HTML SISÄLTÖ EPÄONNISTUESSA: ${source}    level=ERROR
         Take Screenshot    filename=fail_debug_source
-        Fail    Sivun pääotsikkoa ei löytynyt. Katso HTML-sisältö ja screenshot lokista.
+        Fail    React-sovellus kaatui käynnistyksessä. Katso virhe ylhäältä.
     END
 
     Take Screenshot    filename=1_etusivu
