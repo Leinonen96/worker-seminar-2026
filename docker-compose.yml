@@ -28,7 +28,6 @@ services:
   frontend:
     build:
       context: ./frontend/workerfrontend
-      dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
         VITE_AUTH_DOMAIN: ${VITE_AUTH_DOMAIN}
