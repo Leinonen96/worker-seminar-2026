@@ -1,50 +1,6 @@
-<div align="center">
-
 # Gig-Based Job Platform
 
 A full-stack web application connecting people who need help with tasks ("Employers") with skilled individuals looking for work ("Taskers"). The platform facilitates the entire workflow from job posting to completion, payment, and feedback.
-
-[![Live Demo](https://img.shields.io/badge/demo-live-success?style=for-the-badge)](https://worker-application.netlify.app/)
-[![GitHub Issues](https://img.shields.io/github/issues/JTTAM-Projects/worker?style=for-the-badge)](https://github.com/JTTAM-Projects/worker/issues)
-[![GitHub Stars](https://img.shields.io/github/stars/JTTAM-Projects/worker?style=for-the-badge)](https://github.com/JTTAM-Projects/worker/stargazers)
-
-[View Demo](https://worker-application.netlify.app/) · [Report Bug](https://github.com/JTTAM-Projects/worker/issues) · [Request Feature](https://github.com/JTTAM-Projects/worker/issues)
-
-</div>
-
----
-
-## 📋 Table of Contents
-- [About The Project](#about-the-project)
-- [Core Features](#-core-features)
-- [Technology Stack](#-technology-stack)
-- [Database Structure](#-entity-relationship-diagram-erd)
-- [Getting Started](#-getting-started)
-- [Testing](#-testing)
-- [API Documentation](#-api-documentation)
-- [Live Demo](#-live-demo)
-- [Security](#-security-considerations)
-- [Known Issues](#-known-issues--limitations)
-- [Roadmap](#-future-enhancements)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [Authors](#-authors)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
-
----
-
-## About The Project
-
-This gig-based job platform was developed as part of Haaga-Helia University of Applied Sciences' Software Project II course. The application addresses the need for a streamlined platform where individuals can easily find help with everyday tasks while providing skilled workers with opportunities to earn income.
-
-**Why this project?**
-- Connects task posters with skilled workers in a secure environment
-- Simplifies the entire workflow from job posting to payment
-- Provides reputation system through ratings and reviews
-- Offers flexible work opportunities for taskers
-
-The platform supports two distinct user journeys - one for those seeking help (Employers) and another for those offering services (Taskers), with Auth0-powered authentication ensuring secure access.
 
 ## 🚀 Core Features
 
@@ -366,6 +322,14 @@ worker/
         └── vite.config.ts
 ```
 
+## 👥 Authors
+
+* **Aku Ihamuotila** - Developer
+* **Tuomas Jaakkola** - Developer
+* **Jani Könönen** - Developer
+* **Tuomas Leinonen** - Developer
+* **Markus Mäntylä** - Developer
+
 ## 🌐 Live Demo
 
 **Live Application:** [https://worker-application.netlify.app/](https://worker-application.netlify.app/)
@@ -375,8 +339,6 @@ worker/
 - Password: `Test@123`
 
 **Note:** The application uses Auth0 authentication. After logging in, you can explore both Employer and Tasker functionalities depending on which profile you create.
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
 
 ## 🔒 Security Considerations
 
@@ -401,8 +363,6 @@ worker/
 - Development mode uses H2 in-memory database with default credentials (not for production)
 - **CORS Security:** Backend currently allows all origins (`*`). For production security, this should be restricted to specific domains (e.g., `https://worker-application.netlify.app`)
 
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
-
 ## 🐛 Known Issues & Limitations
 
 For a complete list of known issues and planned improvements, see [GitHub Issues](https://github.com/JTTAM-Projects/worker/issues).
@@ -417,9 +377,7 @@ For a complete list of known issues and planned improvements, see [GitHub Issues
 ### Planned Features
 See [GitHub Issues](https://github.com/JTTAM-Projects/worker/issues) for detailed feature requests and enhancements.
 
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
-
-## 📈 Roadmap
+## 📈 Future Enhancements
 
 - [ ] Real-time messaging system between Employers and Taskers
 - [ ] Actual payment gateway integration (Paytrail)
@@ -428,13 +386,6 @@ See [GitHub Issues](https://github.com/JTTAM-Projects/worker/issues) for detaile
 - [ ] Mobile application (React Native)
 - [ ] Multi-language support (i18n)
 - [ ] Analytics dashboard for users
-- [ ] Restrict CORS to specific production domains
-- [ ] Advanced filtering and sorting options
-- [ ] Email notifications for task updates
-
-See the [open issues](https://github.com/JTTAM-Projects/worker/issues) for a full list of proposed features and known issues.
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
 
 ## 🧪 Testing Coverage
 
@@ -454,8 +405,6 @@ cd backend/glig
 # Generate coverage report
 ./mvnw test jacoco:report
 ```
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
 
 ## 🚀 Deployment
 
@@ -504,8 +453,6 @@ VITE_AUTH_AUDIENCE=https://glig.com
 VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ```
 
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
-
 ## 📚 Documentation
 
 ### API Documentation
@@ -519,82 +466,36 @@ VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ### Architecture Decisions
 Key architectural decisions are documented in code comments and this README.
 
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
-
 ## 🤝 Contributing
 
 This is an academic project for Haaga-Helia University of Applied Sciences. While the repository is public for educational purposes, it is not currently accepting external contributions.
 
 ### For Team Members
-
-Contributions from team members are what make this project successful. If you have a suggestion that would improve the project, please follow these steps:
-
 1. Create a feature branch from `dev`
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-2. Make your changes and commit them
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-3. Write/update tests for your changes
-4. Push to the branch
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. Submit a pull request to `dev`
-6. Ensure all tests pass and code review is approved
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
+2. Make your changes
+3. Write/update tests
+4. Submit a pull request to `dev`
+5. Ensure all tests pass and code review is approved
 
 ## 📄 License
 
 This project is created for educational purposes as part of Haaga-Helia University of Applied Sciences' Software Project II course.
 
-All rights reserved. This project is not licensed for public use, modification, or distribution outside of its educational context.
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
-
 ## 🙏 Acknowledgments
 
-This project wouldn't have been possible without the following resources and support:
-
-* [Haaga-Helia University of Applied Sciences](https://www.haaga-helia.fi/) - Educational institution and project sponsor
-* Course instructors and mentors for their guidance
-* [Auth0](https://auth0.com/) - Authentication and authorization platform
-* [Google Maps Platform](https://developers.google.com/maps) - Location services
-* [Spring Boot Documentation](https://spring.io/projects/spring-boot)
-* [React Documentation](https://react.dev/)
-* [TanStack Query](https://tanstack.com/query/latest) - Powerful asynchronous state management
-* [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-* [Best-README-Template](https://github.com/othneildrew/Best-README-Template) - README inspiration
-* [Img Shields](https://shields.io/) - README badges
-* [GitHub Pages](https://pages.github.com/) - Documentation hosting
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
+- Haaga-Helia University of Applied Sciences
+- Course instructors and mentors
+- Auth0 for authentication services
+- Google Maps Platform for location services
+- Spring Boot and React communities
 
 ## 📞 Contact
 
-**Project Repository:** [https://github.com/JTTAM-Projects/worker](https://github.com/JTTAM-Projects/worker)
-
-**Report Issues:** [https://github.com/JTTAM-Projects/worker/issues](https://github.com/JTTAM-Projects/worker/issues)
-
-**Team Members:**
-- Aku Ihamuotila - Developer
-- Tuomas Jaakkola - Developer  
-- Jani Könönen - Developer
-- Tuomas Leinonen - Developer
-- Markus Mäntylä - Developer
-
-<p align="right">(<a href="#table-of-contents">back to top</a>)</p>
+For questions or feedback about this project:
+- **Repository:** [https://github.com/JTTAM-Projects/worker](https://github.com/JTTAM-Projects/worker)
+- **Issues:** [https://github.com/JTTAM-Projects/worker/issues](https://github.com/JTTAM-Projects/worker/issues)
 
 ---
 
-<div align="center">
-
-*Last Updated: November 2025*  
+*Last Updated: November 2025*
 *Project Status: In Development*
-
-Made with ❤️ by JTTAM-Projects Team
-
-</div>
