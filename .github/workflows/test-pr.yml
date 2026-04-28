@@ -22,8 +22,8 @@ jobs:
         run: |
           cd backend
           mvn test
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Run Backend Unit Tests
+        run: mvn -f backend/glig/pom.xml test
 
       - name: Install Robot Framework dependencies
         run: |
