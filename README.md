@@ -76,6 +76,8 @@ cat ~/.ssh/github_actions
 
 <img width="898" height="712" alt="secrets" src="https://github.com/user-attachments/assets/25266f77-5c50-4130-9bad-acf67e307454" /><
 
+Siirsin luomani yksityisen avaimen sekä palvelimen kirjautumistiedot turvallisesti GitHub-repositorioni Actions Secrets -asetuksiin. Näin CI/CD-putki pystyy jatkossa ottamaan automaattisesti yhteyden palvelimeeni ja päivittämään Docker-kontit uusimpaan versioon.
+
 ## Muistiongelman ratkaisu VPS-palvelimella
 
 Yksi projektin merkittävimmistä teknisistä haasteista liittyi DigitalOceanin VPS-palvelimen resurssien riittävyyteen. Koska palvelimella oli käytössä vain noin 1 Gt fyysistä RAM-muistia, raskaat Docker-buildit aiheuttivat muistin loppumisen ja GitHub Actions -putken jumiutumiseen pahimmillaan yli 30 minuutiksi ennen epäonnistumista.
@@ -99,11 +101,7 @@ free -m
 
 <img width="747" height="110" alt="swapmemory" src="https://github.com/user-attachments/assets/00ad02a8-382a-491e-a715-cf2887285448" />
 
-
 Build-aika putosi yli 30 minuutista alle minuuttiin.
-
-
-Siirsin luomani yksityisen avaimen sekä palvelimen kirjautumistiedot turvallisesti GitHub-repositorioni Actions Secrets -asetuksiin. Näin CI/CD-putki pystyy jatkossa ottamaan automaattisesti yhteyden palvelimeeni ja päivittämään Docker-kontit uusimpaan versioon.
 
 ### 4. Automaattinen CI/CD-putki (GitHub Actions)
 
