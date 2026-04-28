@@ -78,7 +78,7 @@ cat ~/.ssh/github_actions
 
 ## Muistiongelman ratkaisu VPS-palvelimella
 
-Yksi projektin merkittävimmistä teknisistä haasteista liittyi DigitalOceanin VPS-palvelimen resurssien riittävyyteen. Koska palvelimella oli käytössä vain noin 1 Gt fyysistä RAM-muistia, raskaat Docker-buildit – erityisesti Spring Boot -backendin kääntäminen Mavenilla – aiheuttivat muistin loppumisen ja GitHub Actions -putken jumiutumiseen pahimmillaan yli 30 minuutiksi ennen epäonnistumista.
+Yksi projektin merkittävimmistä teknisistä haasteista liittyi DigitalOceanin VPS-palvelimen resurssien riittävyyteen. Koska palvelimella oli käytössä vain noin 1 Gt fyysistä RAM-muistia, raskaat Docker-buildit aiheuttivat muistin loppumisen ja GitHub Actions -putken jumiutumiseen pahimmillaan yli 30 minuutiksi ennen epäonnistumista.
 
 Ratkaisin ongelman optimoimalla Linuxin muistinhallintaa. Rakensin palvelimelle swap-tiedoston, jonka avulla järjestelmä voi käyttää SSD-levyä väliaikaisena lisämuistina silloin, kun RAM-muisti uhkaa loppua kesken.
 
