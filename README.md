@@ -57,6 +57,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 docker ps
 ```
+<img width="787" height="238" alt="linuxDocker" src="https://github.com/user-attachments/assets/c320c019-cd33-4747-934a-ea61fae08ac9" />
 
 img width="787" height="238" alt="linuxDocker" src="https://github.com/user-attachments/assets/51b2a64a-80f9-49bb-bf82-2354c6e4a78b" />
 
