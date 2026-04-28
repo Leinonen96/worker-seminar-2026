@@ -100,7 +100,7 @@ Putki koostuu seuraavista vaiheista:
 
 Tämä toetuttaa automaattisen kehityssyklin: kun pushaan koodia `main`-haaraan, muutokset näkyvät palvelimella (IP: 64.227.70.95) muutamassa minuutissa ilman manuaalisia toimenpiteitä.
 
-📦 **Sovelluksen konttiarkkitehtuuri (Docker Compose)**
+**Sovelluksen konttiarkkitehtuuri (Docker Compose)**
 
 Projektin infra koostuu kolmesta toisistaan eristetystä kontista, jotka keskustelevat keskenään Dockerin sisäisessä verkossa:
 
