@@ -59,7 +59,8 @@ docker ps
 ```
 <img width="787" height="238" alt="linuxDocker" src="https://github.com/user-attachments/assets/c320c019-cd33-4747-934a-ea61fae08ac9" />
 
-img width="787" height="238" alt="linuxDocker" src="https://github.com/user-attachments/assets/51b2a64a-80f9-49bb-bf82-2354c6e4a78b" />
+<img width="898" height="712" alt="secrets" src="https://github.com/user-attachments/assets/055fc7ff-3706-4947-9dde-8dce71993c71" />
+
 
 ### 3. Yhteyden luominen GitHub Actionsille
 Varmistaakseni automaattisten deploymentien toiminnan, loin palvelimelle erillisen, salasanattoman SSH-avaimen (ed25519) yksinomaan GitHub Actionsia varten.
