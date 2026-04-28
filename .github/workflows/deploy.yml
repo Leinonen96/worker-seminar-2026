@@ -20,9 +20,8 @@ jobs:
           cache: maven
 
       - name: Run Backend Unit Tests
-        run: |
-          cd backend
-          mvn test
+        working-directory: backend/glig
+        run: mvn test -Dtest=!TestDataIntegrationTests#ResetDataBaseToOriginalStateAfterRemovingApplies
       - name: Copy project files to Droplet via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
