@@ -1,5 +1,3 @@
-<img width="1326" height="393" alt="0f2bcca6-fe50-4e9c-85cf-74f150ea0021" src="https://github.com/user-attachments/assets/03899f41-5738-416f-95f0-b84465b6ce7b" />
-
 ## Palvelimen valmistelu ja CI/CD-yhteyden rakentaminen
 
 Useimmat kurssiprojektit käyttävät valmiita PaaS-palveluita, kuten Renderiä, Herokua, Rahtia tai Verceliä, koska deployment on niiden kanssa helppoa ja nopeaa. Minä päätin kuitenkin rakentaa sovellukselle oman VPS-ympäristön DigitalOceaniin.
