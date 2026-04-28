@@ -1,7 +1,7 @@
 
 ## Palvelimen valmistelu ja CI/CD-yhteyden rakentaminen
 
-Useimmat kurssiprojektit käyttävät valmiita PaaS-palveluita, kuten Renderiä tai Verceliä, koska deployment on niiden kanssa helppoa ja nopeaa. Minä päätin kuitenkin rakentaa sovellukselle oman VPS-ympäristön DigitalOceaniin.
+Useimmat kurssiprojektit käyttävät valmiita PaaS-palveluita, kuten Renderiä, Herokua, Rahtia tai Verceliä, koska deployment on niiden kanssa helppoa ja nopeaa. Minä päätin kuitenkin rakentaa sovellukselle oman VPS-ympäristön DigitalOceaniin.
 
 Hyödynsin vahvasti Linux-palvelimet-kurssilla opittuja taitoja palvelimen pystytyksessä. Kurssilla käytiin läpi palvelimen peruskonfigurointia, palomuuria, Nginx:ää ja yleistä Linux-hallintaa, joten sain hyvän lähtökohdan projektille. Tämän takia osa alkuvaiheen asetuksista (kuten käyttäjän luonti, SSH-avaimet ja palomuurin säätäminen) ei ole erikseen dokumentoitu tähän raporttiin.
 
