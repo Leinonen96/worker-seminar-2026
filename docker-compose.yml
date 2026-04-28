@@ -30,7 +30,7 @@ services:
       context: ./frontend/workerfrontend
       dockerfile: Dockerfile
       args:
-        # TÄMÄ ON SILTA: Nämä siirtävät muuttujat Dockerin buildiin
+        # siirtävät muuttujat Dockerin buildiin
         VITE_API_URL: ${VITE_API_URL}
         VITE_AUTH_DOMAIN: ${VITE_AUTH_DOMAIN}
         VITE_AUTH_CLIENT_ID: ${VITE_AUTH_CLIENT_ID}
