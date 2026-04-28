@@ -34,8 +34,7 @@ jobs:
 
       - name: Run E2E Tests (Headless)
         run: |
-          # IMPORTANT: We override to headless=true for CI
-          robot --variable HEADLESS:True --outputdir results e2e-tests/
+          robot --variable HEADLESS:${True} --variable BASE_URL:http://localhost:80 --outputdir results e2e-tests/
 
       - name: Upload Test Results
         if: always()
