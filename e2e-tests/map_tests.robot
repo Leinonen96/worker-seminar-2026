@@ -11,7 +11,7 @@ Avaa Tehtavasivu
 
 *** Test Cases ***
 Tarkista Karttanakyma Latautuu
-    [Documentation]    Varmistetaan, että karttanäkymä aukeaa (Google Maps UI latautuu).
+    [Documentation]    Varmistetaan, että karttanäkymä aukeaa. (Google Maps UI latautuu)
     
     # 1. KARTTANÄKYMÄÄN SIIRTYMINEN
     Wait For Elements State    text="Kartta"    visible
