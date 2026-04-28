@@ -1,3 +1,4 @@
+
 ## Palvelimen valmistelu ja CI/CD-yhteyden rakentaminen
 
 Useimmat kurssiprojektit käyttävät valmiita PaaS-palveluita, kuten Renderiä tai Verceliä, koska deployment on niiden kanssa helppoa ja nopeaa. Minä päätin kuitenkin rakentaa sovellukselle oman VPS-ympäristön DigitalOceaniin.
@@ -57,6 +58,8 @@ newgrp docker
 docker ps
 ```
 
+img width="787" height="238" alt="linuxDocker" src="https://github.com/user-attachments/assets/51b2a64a-80f9-49bb-bf82-2354c6e4a78b" />
+
 ### 3. Yhteyden luominen GitHub Actionsille
 Varmistaakseni automaattisten deploymentien toiminnan, loin palvelimelle erillisen, salasanattoman SSH-avaimen (ed25519) yksinomaan GitHub Actionsia varten.
 
@@ -72,7 +75,8 @@ chmod 600 ~/.ssh/authorized_keys
 cat ~/.ssh/github_actions
 ```
 
-![GitHub Actions Secrets -kuva](image.png)
+<img width="898" height="712" alt="secrets" src="https://github.com/user-attachments/assets/25266f77-5c50-4130-9bad-acf67e307454" /><
+
 
 Siirsin luomani yksityisen avaimen sekä palvelimen kirjautumistiedot turvallisesti GitHub-repositorioni Actions Secrets -asetuksiin. Näin CI/CD-putki pystyy jatkossa ottamaan automaattisesti yhteyden palvelimeeni ja päivittämään Docker-kontit uusimpaan versioon.
 
@@ -135,8 +139,8 @@ Kaikki testit voidaan ajaa paikallisesti yhdellä komennolla:
 ```bash
 robot --outputdir results e2e-tests/
 ```
-
-
+<img width="901" height="672" alt="testsPassed" src="https://github.com/user-attachments/assets/43dab37d-99aa-4923-94ad-549619621aea" />
+<img width="1570" height="1493" alt="pullRequest" src="https://github.com/user-attachments/assets/34d030e4-6190-4a6c-b5ae-03f91e4bb3a4" />
 
 
 ## Poikkeamat alkuperäisestä suunnitelmasta
