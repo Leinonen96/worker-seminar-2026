@@ -9,7 +9,6 @@ ${TEST_PASS}      Testi123!
 
 *** Keywords ***
 Avaa Sovellus
-    # Nyt headless-argumentti saa boolean-arvon, ei tekstiä
     New Browser     browser=chromium    headless=${HEADLESS}
     New Context     viewport={'width': 1920, 'height': 1080}    ignoreHTTPSErrors=True
     
