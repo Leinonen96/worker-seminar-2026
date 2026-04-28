@@ -76,21 +76,26 @@ cat ~/.ssh/github_actions
 
 <img width="898" height="712" alt="secrets" src="https://github.com/user-attachments/assets/25266f77-5c50-4130-9bad-acf67e307454" /><
 
+## Muistiongelman ratkaisu VPS-palvelimella
+
 Yksi projektin merkittävimmistä teknisistä haasteista liittyi DigitalOceanin VPS-palvelimen resurssien riittävyyteen. Koska palvelimella oli käytössä vain noin 1 Gt fyysistä RAM-muistia, raskaat Docker-buildit – erityisesti Spring Boot -backendin kääntäminen Mavenilla – aiheuttivat muistin loppumisen ja GitHub Actions -putken jumiutumiseen pahimmillaan yli 30 minuutiksi ennen epäonnistumista.
 
 Ratkaisin ongelman optimoimalla Linuxin muistinhallintaa. Rakensin palvelimelle swap-tiedoston, jonka avulla järjestelmä voi käyttää SSD-levyä väliaikaisena lisämuistina silloin, kun RAM-muisti uhkaa loppua kesken.
 
+### Swap-tiedoston konfigurointi
+
 Konfiguroin 2 Gt kokoisen swap-tiedoston seuraavilla komennoilla:
 
-Bash
-# Luodaan 2 Gt swap-tiedosto
+```bash
+### Luodaan 2 Gt swap-tiedosto
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 
-# Varmistetaan käyttö
+### Varmistetaan käyttö
 free -m
+```
 
 <img width="747" height="110" alt="swapmemory" src="https://github.com/user-attachments/assets/00ad02a8-382a-491e-a715-cf2887285448" />
 
