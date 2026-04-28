@@ -19,11 +19,8 @@ jobs:
           cache: maven
 
       - name: Run Backend Unit Tests
-        run: |
-          cd backend
-          mvn test
-      - name: Run Backend Unit Tests
-        run: mvn -f backend/glig/pom.xml test
+        working-directory: backend/glig
+        run: mvn test
 
       - name: Install Robot Framework dependencies
         run: |
