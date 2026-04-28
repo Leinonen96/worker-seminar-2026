@@ -12,7 +12,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
+      - name: Run Backend Unit Tests
+        run: |
+          cd backend
+          mvn test
       - name: Copy project files to Droplet via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -32,7 +42,7 @@ jobs:
           script: |
             cd /home/${{ secrets.DROPLET_USERNAME }}/worker-app
 
-            # 1. Exportataan muuttujat shellin ympäristöön (docker-compose args varten)
+            # 1. Exportataan muuttujat shellin ympäristöön
             export VITE_API_URL="${{ secrets.VITE_API_URL }}"
             export VITE_AUTH_DOMAIN="${{ secrets.VITE_AUTH_DOMAIN }}"
             export VITE_AUTH_CLIENT_ID="${{ secrets.VITE_AUTH_CLIENT_ID }}"
@@ -42,21 +52,19 @@ jobs:
             export AUTH0_ISSUER="${{ secrets.AUTH0_ISSUER }}"
             export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
 
-            # 2. Kirjoitetaan .env varmuuden vuoksi
+            # 2. Kirjoitetaan .env
             printf "VITE_API_URL=$VITE_API_URL\nVITE_AUTH_DOMAIN=$VITE_AUTH_DOMAIN\nVITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID\nVITE_AUTH_AUDIENCE=$VITE_AUTH_AUDIENCE\nVITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY\nVITE_DISABLE_AUTH0=$VITE_DISABLE_AUTH0\n" > frontend/workerfrontend/.env
             printf "AUTH0_ISSUER=$AUTH0_ISSUER\nAUTH0_AUDIENCE=$AUTH0_AUDIENCE\n" > .env
 
             # 3. Käynnistetään sovellus
             docker compose down
-            
-            # PAKOTETAAN PUHDAS BUILD FRONTENDILLE (Ohittaa viallisen välimuistin)
             docker compose build --no-cache frontend
             docker compose up -d
 
             # 4. Siivoataan vanhat testitulokset
             docker run --rm -v $(pwd)/e2e-tests:/app alpine rm -rf /app/results/*
 
-            # 5. Ajetaan testit (Robotti hoitaa dynaamisen odotuksen)
+            # 5. Ajetaan testit palvelimella (E2E)
             docker compose --profile e2e up robot --build --abort-on-container-exit
             
             # 6. Siivous
