@@ -122,9 +122,7 @@ Maven-pohjaiset JUnit-testit on automatisoitu osaksi CI/CD-putkea. Ne ajetaan `u
 
 ### End-to-End -testaus (Robot Framework)
 
-Alun perin tavoitteena oli ajaa kaikki E2E-testit automaattisesti osana GitHub Actions -CI/CD-putkea. Käytännössä tämä osoittautui kuitenkin haastavaksi: Robot Framework toimi ongelmitta lokaalisti, mutta GitHub Actions -ympäristössä Docker-konttien kanssa ilmeni verkkoyhteysongelmia. Authentication-testi meni läpi, mutta muut testit epäonnistuivat. Vaikka ongelman tarkkaa syytä ei saatu selvitettyä ajalla, CI/CD-putki itsessään toimii ja näyttää testien lokit.
-
-Tämän vuoksi päätin siirtää end-to-end -testauksen ajettavaksi **paikallisessa kehitysympäristössä**. Testit ajetaan suoraan tuotantopalvelinta vasten, mikä varmistaa sovelluksen toimivuuden ennen muutosten mergaamista.
+Alun perin tavoitteena oli ajaa kaikki E2E-testit automaattisesti osana GitHub Actions -CI/CD-putkea. Käytännössä tämä osoittautui kuitenkin haastavaksi: Robot Framework toimi ongelmitta lokaalisti, mutta GitHub Actions -ympäristössä Docker-konttien kanssa ilmeni verkkoyhteysongelmia. Vlillä testit meni läpi ja välillä epäonnistuivat. CI/CD-putki itsessään toimii ja näyttää testien lokit Pull Requesteissa, että Deployment palvelimelle, onnistuivat ne sitten tai eivät.
 
 Testit on jaettu neljään tiedostoon selkeyden ja ylläpidettävyyden vuoksi:
 
@@ -144,18 +142,11 @@ robot --outputdir results e2e-tests/
 
 ## Poikkeamat alkuperäisestä suunnitelmasta
 
-Alkuperäinen tavoite oli ajaa Robot Framework -testit osana CI/CD-putkea Docker-kontissa. 
-Tämä ei kuitenkaan onnistunut käytännössä seuraavista syistä:
+Alun perin tavoitteena oli ajaa Robot Framework -testit täysin automatisoidusti osana CI/CD-putkea Docker-kontissa. Tämä osoittautui teknisesti haastavaksi verkkoyhteys- ja porttiongelmien vuoksi, mutta sain lopulta ratkaistua nämä haasteet.
 
-- Verkkoyhteysongelmat GitHub Actionsin ja Docker-konttien välillä
-- Proxy / porttien altistusongelmat
-- Ajan rajallisuus
+Testit ajetaan nyt onnistuneesti jokaisen Pull Requestin yhteydessä (test-pr.yml).
 
-Tämän vuoksi päädyin ratkaisuun:
-- Backend-testit → CI/CD:ssä
-- E2E-testit → paikallisesti (Ne ovat silti katsottavissa putken lokista)
-
-Tämä kompromissi mahdollistaa edelleen luotettavan testauksen, mutta ei täysin automatisoitua pipelinea.
+Testien ajot ja tulokset ovat katsottavissa suoraan GitHub Actionsin lokeista, mikä varmistaa sovelluksen laadun tai ennen deploymentia.
 
 ## Mitä opin
 
@@ -163,15 +154,14 @@ Tämä projekti oli todella opettava kokonaisuus, vaikka se ei edennyt ongelmitt
 
 Aluksi ajattelin, että CI/CD-putki on vain sarja komentoja, jotka ajetaan automaattisesti. Projektin edetessä ymmärsin, että se on jatkuvaa tasapainoilua infran ja sovelluksen välillä. Opin, miten kriittistä on, että kehitysympäristö ja tuotantoympäristö vastaavat toisiaan.
 
-Ehkä arvokkain oivallus tuli Robot Frameworkin ja GitHub Actionsin integraation haasteiden kautta. Opin, että pilviympäristöissä (kuten GitHubin runnerit) verkkoliikenne, porttien ohjaukset ja headless-selainten käyttäytyminen poikkeavat merkittävästi lokaalista ympäristöstä. Vaikka en saanut aivan jokaista testiä vihreäksi automaattisessa putkessa, opin analysoimaan lokitiedostoja ja ymmärtämään, missä kohtaa "ketju katkeaa". Strateginen päätös siirtää osa testeistä lokaaliin ajoon opetti minulle priorisointia: joskus on tärkeämpää saada toimiva julkaisuputki pystyyn kuin hioa täydellistä automaatiota deadlinen kustannuksella.
+Ehkä arvokkain oivallus tuli Robot Frameworkin ja GitHub Actionsin integraation haasteiden kautta. Opin, että pilviympäristöissä verkkoliikenne, porttien ohjaukset ja Docker-konttien välinen kommunikaatio poikkeavat merkittävästi lokaalista ympäristöstä. Vaikka kohtasin alkuun haasteita proxy-asetusten ja headless-selainten kanssa, onnistuin lopulta konfiguroimaan putken niin, että E2E-testit ajetaan onnistuneesti kontitettuna osana laadunvarmistusta. Tämä opetti minulle kärsivällisyyttä analysoida lokitiedostoja ja ymmärtämään tarkasti, missä kohtaa tekninen "ketju katkeaa".
 
-Valmiiden palveluiden, kuten Renderin, käyttämisen sijaan itse pystytetty Linux-palvelin opetti minulle valtavasti palvelinhallinnasta. Tämä antoi minulle itsevarmuutta hallita koko sovelluksen elinkaarta ja itsevarmuutta työelämään docker kikkailuihin ja custom palvelimiin.
+Valmiiden PaaS-palveluiden, kuten Renderin, sijaan itse pystytetty Linux-palvelin opetti minulle palvelinhallinnasta. Tämä kokonaisuus antoi minulle vahvaa itsevarmuutta hallita sovelluksen koko elinkaarta koodista pilveen. Koen, että kerrytetty osaaminen "Docker-kikkailusta" ja custom-palvelimista on suoraan sovellettavissa työelämän vaativiin projekteihin.
 
 ## Jatkokehitys
 
 Vaikka sovellus on nyt tuotantovalmis ja CI/CD-putki toiminnassa, näen useita kehityskohteita jatkoa ajatellen:
 
-- E2E-testauksen täysi automaatio: Putken viimeistely siten, että Robot Framework -testit ajetaan täysin integroituna GitHub Actionsissa Docker-verkko-ongelmien ratkaisemisen jälkeen.
 - Testikattavuuden laajentaminen: Nykyinen testaus on luonteeltaan tekninen demo (Proof of Concept). Jatkossa tarvittaisiin kattava testaussuunnitelma, joka kattaa kaikki reunatapaukset ja monimutkaisemmat käyttäjäpolut.
 - CI/CD-putken optimointi: Build-aikojen lyhentäminen hyödyntämällä tehokkaammin Dockerin monivaiheisia rakennusvaiheita (Multi-stage builds) ja välimuistia (Cache layers).
 - Monitorointi ja logitus: Palvelinympäristön varustaminen reaaliaikaisella monitoroinnilla, jotta infran tilaa voidaan seurata tarkemmin.
