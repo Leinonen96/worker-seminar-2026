@@ -1,3 +1,4 @@
+<img width="1326" height="393" alt="0f2bcca6-fe50-4e9c-85cf-74f150ea0021" src="https://github.com/user-attachments/assets/03899f41-5738-416f-95f0-b84465b6ce7b" />
 
 ## Palvelimen valmistelu ja CI/CD-yhteyden rakentaminen
 
@@ -139,6 +140,7 @@ robot --outputdir results e2e-tests/
 ```
 <img width="901" height="672" alt="testsPassed" src="https://github.com/user-attachments/assets/43dab37d-99aa-4923-94ad-549619621aea" />
 <img width="1570" height="1493" alt="pullRequest" src="https://github.com/user-attachments/assets/34d030e4-6190-4a6c-b5ae-03f91e4bb3a4" />
+<img width="1326" height="393" alt="0f2bcca6-fe50-4e9c-85cf-74f150ea0021" src="https://github.com/user-attachments/assets/4e28ede8-48e1-4d0b-8cb6-0ce01bf0de4e" />
 
 
 ## Poikkeamat alkuperäisestä suunnitelmasta
