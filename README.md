@@ -14,7 +14,7 @@ Sovellus pyörii DigitalOceanin Droplet-palvelimella seuraavilla spekseillä:
 - **Suoritin**: 1 vCPU  
 - **Tallennustila**: 25 GB SSD  
 - **Sijainti**: Amsterdam (AMS3)
-- **Domain** https://tuomasleinonen.store/
+- **Domain**: https://tuomasleinonen.store/
 
 Palvelimelle asetin UFW-palomuurin ja Nginx-reverse proxyn hoitamaan liikennettä. HTTPS-salaus toteutettiin Let's Encrypt -sertifikaateilla, ja kokonaisuus sai SSL Labs -testistä arvosanan **A+**.
 
